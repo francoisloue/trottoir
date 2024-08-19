@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
+
 @Entity
 @Data
 @Table(name = "user",uniqueConstraints = {

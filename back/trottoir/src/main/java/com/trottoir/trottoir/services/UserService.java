@@ -12,4 +12,7 @@ public interface UserService{
 
     List<User> findAll();
 
+    Long login(String email,String password);
+
+
 }
