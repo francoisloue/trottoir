@@ -6,27 +6,30 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "post",uniqueConstraints = {
-    @UniqueConstraint(columnNames = "email")
-})
+@Table(name = "posts")
 public class Post {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    @Size(min = 144, message = "text content is above 144 characters limit")
-    private String content;
-    @OneToOne
-    @JoinColumn(name="author_id", referencedColumnName = "id", nullable = false)
-    private User author;
-    @Column(name="like_count")
-    private Long likeCount;
-}
 
+    @Column(nullable = false, length = 100)
+    private String title;
+
+    @Size(max = 144, message = "text content is above 144 characters limit")
+    @Column(nullable = false)
+    private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
+    private User author;
+
+    @Column(name = "like_count", nullable = false)
+    private Long likeCount = 0L;
+}

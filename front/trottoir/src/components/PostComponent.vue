@@ -1,26 +1,23 @@
 <template>
     <div class="card" style="width: 18rem;">
         <div class="card-body">
-            <h5 class="card-title">Login</h5>
+            <h5 class="card-title">Write a Tro't</h5>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
                     <div data-mdb-input-init class="form-outline mb-4">
-                        <input type="email" id="loginName" class="form-control" v-model="email" />
-                        <label class="form-label" for="loginName">Email</label>
+                        <input type="input" id="inputTitle" class="form-control" v-model="title" />
+                        <label class="form-label" for="inputTitle">Title</label>
                     </div>
 
                     <div data-mdb-input-init class="form-outline mb-4">
-                        <input type="password" id="loginPassword" class="form-control" v-model="password" />
-                        <label class="form-label" for="loginPassword">Password</label>
+                        <input type="input" id="inputContent" class="form-control" v-model="content" maxlength="144" />
+                        <label class="form-label" for="inputContent">content</label>
                     </div>
                     <button type="submit" data-mdb-button-init data-mdb-ripple-init
-                        class="btn btn-primary btn-block mb-4" v-on:click="login">Sign in</button>
+                        class="btn btn-primary btn-block mb-4" v-on:click="createPost">Create Trot't</button>
                 </div>
                 <div class="alert alert-warning" role="alert" v-if="errorMessage != null">
                     {{ errorMessage }}
-                </div>
-                <div>
-                    <a href="/register">No Account ?</a>
                 </div>
             </div>
         </div>
@@ -29,42 +26,40 @@
 
 <script>
 import axios from 'axios'
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 
 export default {
     data() {
         return {
-            email: null,
-            password: null,
+            title: null,
+            content: null,
             errorMessage: null
         };
     },
     methods: {
-        async login() {
+        async createPost() {
             try {
-                const req = await axios.post(import.meta.env.VITE_API_URL + "/login", {
-                    "email": this.email,
-                    "password": this.password
+                const req = await axios.post(import.meta.env.VITE_API_URL + "/posts", {
+                    "title": this.title,
+                    "authorId": Cookies.get("userID"),
+                    "content": this.content
                 });
                 if (req.status >= 200 && req.status < 300) {
-                    if (req.data === 0) this.errorMessage = "Email ou mot de passe incorrect"
-                    else {
-                        this.errorMessage = "Faire l'apres identification OK"
-                        Cookies.set('userID', req.data, { expires: 3600, secure: true, sameSite: 'Strict' });
-                    }
-                } else throw Error("Code retour different de 2XX")
+                    this.errorMessage = "Trot's created"
+                } else throw Error("Code erreur different de 2XX")
 
             } catch (error) {
                 if (error.response && error.response.status === 403) {
                     this.errorMessage = "Identifiant ou mot de passe incorrects";
                 } else {
+                    console.log(error)
                     this.errorMessage = "Erreur avec le serveur";
                 }
             }
         }
     },
     mounted() {
-        // Actions à effectuer lors du montage du composant
+        if (!Cookies.get("userID")) this.$router.push("/login");
     }
 };
 </script>
